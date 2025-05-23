@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Inventario</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                    radial-gradient(circle at 25% 25%, rgba(76, 175, 80, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 75% 75%, rgba(139, 195, 74, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 50% 50%, rgba(76, 175, 80, 0.05) 0%, transparent 50%);
+            animation: floatingBubbles 20s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes floatingBubbles {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(120deg); }
+            66% { transform: translateY(10px) rotate(240deg); }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 40px 35px;
+            border-radius: 25px;
+            box-shadow:
+                    0 25px 50px rgba(0, 0, 0, 0.1),
+                    0 0 0 1px rgba(255, 255, 255, 0.2);
+            width: 450px;
+            margin: 50px auto;
+            position: relative;
+            border: 2px solid rgba(76, 175, 80, 0.2);
+        }
+
+        .container::before {
+            content: '🌿';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 30px;
+            background: white;
+            padding: 5px 15px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2e7d32;
+            font-weight: 700;
+            font-size: 28px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            border-radius: 2px;
+        }
+
+        form label {
+            display: block;
+            margin: 20px 0 8px;
+            font-weight: 600;
+            color: #388e3c;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        form input[type="text"],
+        form input[type="date"],
+        form input[type="number"],
+        form select,
+        form textarea {
+            width: 100%;
+            padding: 12px 16px;
+            margin-bottom: 15px;
+            border: 2px solid #e8f5e8;
+            border-radius: 15px;
+            background: rgba(248, 255, 248, 0.8);
+            font-size: 15px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            color: #2e7d32;
+        }
+
+        form input[type="text"]:focus,
+        form input[type="date"]:focus,
+        form input[type="number"]:focus,
+        form select:focus,
+        form textarea:focus {
+            outline: none;
+            border-color: #4caf50;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+            transform: translateY(-2px);
+        }
+
+        form textarea {
+            resize: vertical;
+            height: 90px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        form select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%234caf50' viewBox='0 0 16 16'%3e%3cpath d='M8 11L3 6h10l-5 5z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+        }
+
+        form button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        form button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        form button:hover::before {
+            left: 100%;
+        }
+
+        form button:hover {
+            background: linear-gradient(135deg, #388e3c 0%, #4caf50 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(76, 175, 80, 0.3);
+        }
+
+        form button:active {
+            transform: translateY(0);
+        }
+
+        .error {
+            color: #e57373;
+            font-size: 12px;
+            margin-top: -10px;
+            margin-bottom: 10px;
+            font-weight: 500;
+            display: block;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Efectos de hojas flotantes */
+        .leaf {
+            position: fixed;
+            opacity: 0.7;
+            animation: leafFall 15s linear infinite;
+            z-index: -1;
+        }
+
+        .leaf:nth-child(1) { left: 10%; animation-delay: -2s; }
+        .leaf:nth-child(2) { left: 20%; animation-delay: -4s; }
+        .leaf:nth-child(3) { left: 30%; animation-delay: -6s; }
+        .leaf:nth-child(4) { left: 40%; animation-delay: -8s; }
+        .leaf:nth-child(5) { left: 50%; animation-delay: -10s; }
+        .leaf:nth-child(6) { left: 60%; animation-delay: -12s; }
+        .leaf:nth-child(7) { left: 70%; animation-delay: -14s; }
+        .leaf:nth-child(8) { left: 80%; animation-delay: -16s; }
+        .leaf:nth-child(9) { left: 90%; animation-delay: -18s; }
+
+        @keyframes leafFall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .container {
+                width: 90%;
+                margin: 20px auto;
+                padding: 30px 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Hojas flotantes -->
+<div class="leaf">🍃</div>
+<div class="leaf">🌿</div>
+<div class="leaf">🍀</div>
+<div class="leaf">🌱</div>
+<div class="leaf">🍃</div>
+<div class="leaf">🌿</div>
+<div class="leaf">🍀</div>
+<div class="leaf">🌱</div>
+<div class="leaf">🍃</div>
+
+<div class="container">
+    <h2>Formulario de Inventario</h2>
+    <form th:action="@{/guardarinventario}" th:object="${inventario}" method="post" id="inventarioForm">
+        <label for="nombreequipo">Nombre del equipo:</label>
+        <input type="text" id="nombreequipo" th:field="*{nombreequipo}" required>
+        <span class="error" id="error-nombre"></span>
+
+        <label for="id">ID del equipo:</label>
+        <input type="text" id="id" th:field="*{id}" pattern="[A-Za-z0-9]+" title="Solo caracteres alfanuméricos" required>
+        <span class="error" id="error-id"></span>
+
+        <label for="categoria">Categoría:</label>
+        <select id="categoria" th:field="*{categoria}" required>
+            <option value="" disabled selected>Seleccione una categoría</option>
+            <option value="Laptop">Laptop</option>
+            <option value="PC de escritorio">PC de escritorio</option>
+            <option value="Servidor">Servidor</option>
+            <option value="Impresora">Impresora</option>
+            <option value="Accesorios">Accesorios</option>
+        </select>
+        <span class="error" id="error-categoria"></span>
+
+        <label for="marca">Marca:</label>
+        <input type="text" id="marca" th:field="*{marca}" required>
+        <span class="error" id="error-marca"></span>
+
+        <label for="fechaadquisicion">Fecha de adquisición:</label>
+        <input type="date" id="fechaadquisicion" th:field="*{fechaadquisicion}" required>
+        <span class="error" id="error-fecha"></span>
+
+        <label for="precio">Precio ($):</label>
+        <input type="number" id="precio" th:field="*{precio}" min="0" step="0.01" required>
+        <span class="error" id="error-precio"></span>
+
+        <label for="estado">Estado:</label>
+        <select id="estado" th:field="*{estado}" required>
+            <option value="" disabled selected>Seleccione el estado</option>
+            <option value="Nuevo">Nuevo</option>
+            <option value="Buen estado">Buen estado</option>
+            <option value="En Reparación">En Reparación</option>
+            <option value="Obsoleto">Obsoleto</option>
+        </select>
+        <span class="error" id="error-estado"></span>
+
+        <label for="observacion">Observaciones:</label>
+        <textarea id="observacion" th:field="*{observacion}" placeholder="Notas adicionales..."></textarea>
+
+        <button type="submit">🌱 Registrar Equipo</button>
+    </form>
+</div>
+<script>
+    document.getElementById('inventarioForm').addEventListener('submit', function(event) {
+        // Validación simple de ejemplo
+        var valid = true;
+        var campos = ['nombreequipo', 'id', 'categoria', 'marca', 'fechaadquisicion', 'precio', 'estado'];
+        campos.forEach(function(campo) {
+            var input = document.getElementById(campo);
+            var errorSpan = document.getElementById('error-' + campo.replace(/adquisicion/, 'fecha'));
+            if (!input.checkValidity()) {
+                errorSpan.textContent = input.title || 'Este campo es obligatorio o tiene un formato inválido.';
+                valid = false;
+            } else {
+                errorSpan.textContent = '';
+            }
+        });
+        if (!valid) {
+            event.preventDefault();
+        }
+    });
+</script>
+</body>
+</html>
